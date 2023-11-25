@@ -36,7 +36,6 @@ namespace QudUX.Concepts
                 if (string.IsNullOrEmpty(_modDirectory))
                 {
                     _modDirectory = ModManager.GetMod("QudUX_fork")?.Path;
-                    XRL.Messages.MessageQueue.AddPlayerMessage("mod directory:", _modDirectory);
                 }
                 return _modDirectory;
             }

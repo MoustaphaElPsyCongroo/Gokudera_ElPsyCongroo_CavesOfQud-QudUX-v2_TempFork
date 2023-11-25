@@ -57,7 +57,7 @@ namespace XRL.World.Parts
             return true;
         }
 
-        public bool RemoveCategoryFromOtherTab (string category)
+        public bool RemoveCategoryFromOtherTab(string category)
         {
             if (!CategoriesInOtherTab.Contains(category))
             {

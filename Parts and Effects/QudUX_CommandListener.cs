@@ -16,10 +16,10 @@ namespace XRL.World.Parts
             base.Register(Object);
         }
 
-		public override bool AllowStaticRegistration()
-		{
-			return true;
-		}
+        public override bool AllowStaticRegistration()
+        {
+            return true;
+        }
 
         public override bool FireEvent(Event E)
         {
@@ -35,11 +35,3 @@ namespace XRL.World.Parts
         }
     }
 }
-
-
-// === QudUX 2.0 Errors ===
-// <...>\Mods\QudUX_old\Parts and Effects\QudUX_CommandListener.cs(30,17): error CS0234: The type or namespace name 'SpriteMenu' does not exist in the namespace 'QudUX.Wishes' (are you missing an assembly reference?)
-// <...>\Mods\QudUX_old\Concepts\Constants.cs(99,50): error CS0103: The name 'AbilityManagerExtender' does not exist in the current context
-// <...>\Mods\QudUX_old\Concepts\Constants.cs(217,72): error CS0117: 'Events' does not contain a definition for 'EmbarkEvent'
-// == Warnings ==
-// None

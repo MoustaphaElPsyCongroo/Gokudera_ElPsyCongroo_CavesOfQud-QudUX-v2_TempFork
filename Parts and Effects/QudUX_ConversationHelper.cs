@@ -6,6 +6,7 @@ using XRL.UI;
 using XRL.Core;
 using XRL.Rules;
 using XRL.Language;
+using XRL.World.Conversations;
 using XRL.World.Effects;
 using XRL.World.Encounters.EncounterObjectBuilders;
 using Options = QudUX.Concepts.Options;
@@ -57,7 +58,10 @@ namespace XRL.World.Parts
                         }
                         catch (Exception ex)
                         {
-                            Debug.Log("QudUX: (Error) Encountered exception while adding conversation choice to merchant to ask about restock duration.\nException details: \n" + ex.ToString());
+                            Debug.Log(
+                                "QudUX: (Error) Encountered exception while adding conversation choice to merchant to ask about restock duration.\nException details: \n"
+                                    + ex.ToString()
+                            );
                         }
                     }
                     if (questID == string.Empty || XRLCore.Core.Game.FinishedQuests.ContainsKey(questID)) //speaker has no dynamic quests
@@ -68,7 +72,10 @@ namespace XRL.World.Parts
                         }
                         catch (Exception ex)
                         {
-                            Debug.Log("QudUX: (Error) Encountered exception while adding conversation choices to identify village quest givers.\nException details: \n" + ex.ToString());
+                            Debug.Log(
+                                "QudUX: (Error) Encountered exception while adding conversation choices to identify village quest givers.\nException details: \n"
+                                    + ex.ToString()
+                            );
                         }
                     }
                 }
@@ -167,15 +174,17 @@ namespace XRL.World.Parts
                     _debugSegmentCounter = 12;
                     if (speaker.Blueprint == "Sparafucile")
                     {
-                        restockDialog = "\n&w*Sparafucile pokes at a few of =pronouns.possessive= wares and then gazes up at you, squinting, as if to question the basis of your inquiry.*&y\n ";
+                        restockDialog =
+                            "\n&w*Sparafucile pokes at a few of =pronouns.possessive= wares and then gazes up at you, squinting, as if to question the basis of your inquiry.*&y\n ";
                     }
                     else
                     {
-                        restockDialog = (dialogGen.Random2 == 1)
-                            ? "Business is booming, friend.\n\nI'm pretty satisfied with what I've got for sale right now; maybe you should look for another "
-                                + "vendor if you need something I'm not offering. I'll think about acquiring more goods eventually, but it won't be anytime soon."
-                            : "Don't see anything that catches your eye?\n\nWell, you're in the minority. My latest shipment has been selling well and "
-                                + "it'll be a while before I think about rotating my stock.";
+                        restockDialog =
+                            (dialogGen.Random2 == 1)
+                                ? "Business is booming, friend.\n\nI'm pretty satisfied with what I've got for sale right now; maybe you should look for another "
+                                    + "vendor if you need something I'm not offering. I'll think about acquiring more goods eventually, but it won't be anytime soon."
+                                : "Don't see anything that catches your eye?\n\nWell, you're in the minority. My latest shipment has been selling well and "
+                                    + "it'll be a while before I think about rotating my stock.";
                     }
                 }
                 else
@@ -187,43 +196,94 @@ namespace XRL.World.Parts
                         if (daysTillRestock < 0.5)
                         {
                             _debugSegmentCounter = 15;
-                            restockDialog = "\n&w*Sparafucile nods eagerly, as if to convey that =pronouns.subjective= is expecting something very soon.*&y\n ";
+                            restockDialog =
+                                "\n&w*Sparafucile nods eagerly, as if to convey that =pronouns.subjective= is expecting something very soon.*&y\n ";
                         }
                         else
                         {
                             int fingers = Math.Max(1, (int)daysTillRestock);
-                            restockDialog = "\n&w*Smiling, Sparafucile gives a slight nod.*&y\n\n"
-                                + "&w*=pronouns.Subjective= purses =pronouns.possessive= lips thoughtfully for a moment, then raises " + fingers + " thin finger" + (fingers > 1 ? "s" : "") + ".*&y\n ";
+                            restockDialog =
+                                "\n&w*Smiling, Sparafucile gives a slight nod.*&y\n\n"
+                                + "&w*=pronouns.Subjective= purses =pronouns.possessive= lips thoughtfully for a moment, then raises "
+                                + fingers
+                                + " thin finger"
+                                + (fingers > 1 ? "s" : "")
+                                + ".*&y\n ";
                         }
                     }
                     else
                     {
                         _debugSegmentCounter = 16;
-                        string daysTillRestockPhrase = (daysTillRestock < 0.5) ? "in a matter of hours"
-                                    : (daysTillRestock < 1) ? "by this time tomorrow"
-                                    : (daysTillRestock < 1.8) ? "within a day or two"
-                                    : (daysTillRestock < 2.5) ? "in about two days' time"
-                                    : (daysTillRestock < 3.5) ? "in about three days' time"
-                                    : (daysTillRestock < 5.5) ? "in four or five days"
-                                    : "in about a week, give or take";
+                        string daysTillRestockPhrase =
+                            (daysTillRestock < 0.5)
+                                ? "in a matter of hours"
+                                : (daysTillRestock < 1)
+                                    ? "by this time tomorrow"
+                                    : (daysTillRestock < 1.8)
+                                        ? "within a day or two"
+                                        : (daysTillRestock < 2.5)
+                                            ? "in about two days' time"
+                                            : (daysTillRestock < 3.5)
+                                                ? "in about three days' time"
+                                                : (daysTillRestock < 5.5)
+                                                    ? "in four or five days"
+                                                    : "in about a week, give or take";
                         string pronounObj = (dialogGen.Random3 == 1 ? "him" : (dialogGen.Random3 == 2 ? "her" : "them"));
                         string pronounSubj = (dialogGen.Random3 == 1 ? "he" : (dialogGen.Random3 == 2 ? "she" : "they"));
                         restockDialog =
-                              (dialogGen.Random4 == 1) ? "There are rumors of a well-stocked dromad caravan moving through the area.\n\nMy sources tell me the caravan "
-                                                    + "should be passing through " + daysTillRestockPhrase + ". I'll likely able to pick up some new trinkets at that time."
-                                                    + (bChanceBasedRestock ? "\n\nOf course, they are only rumors, and dromads tend to wander. I can't make any guarantees." : string.Empty)
-                            : (dialogGen.Random4 == 2) ? "My friend, a water baron is coming to visit this area soon. I sent " + pronounObj + " a list of my requests and should "
-                                                    + "have some new stock available after " + pronounSubj + " arrive" + (pronounSubj == "they" ? "" : "s") + ".\n\n"
-                                                    + "By the movements of the Beetle Moon, I predict " + pronounSubj + " should be here " + daysTillRestockPhrase + "."
-                                                    + (bChanceBasedRestock ? "\n\nIn honesty, though, " + pronounSubj + (pronounSubj == "they" ? " are" : " is") + " not the most "
-                                                    + "reliable friend. I can't make any guarantees." : string.Empty)
-                            : (dialogGen.Random4 == 3) ? "It just so happens my apprentice has come upon a new source of inventory, and is negotiating with the merchant in a "
-                                                    + "nearby village.\n\nThose talks should wrap up soon and I expect to have some new stock " + daysTillRestockPhrase + "."
-                                                    + (bChanceBasedRestock ? "\n\nOf course, negotiations run like water through the salt. I can't make any guarantees." : string.Empty)
-                            : "I'm glad you asked, friend. Arconauts have been coming in droves from a nearby ruin that was recently unearthed. "
-                                                    + "They've been selling me trinkets faster than I can sort them, to be honest. After I manage to get things organized "
-                                                    + "I'll have more inventory to offer.\n\nCheck back with me " + daysTillRestockPhrase + ", and I'll show you what I've got."
-                                                    + (bChanceBasedRestock ? "\n\nThat is... assuming any of the junk is actually resellable. I can't make any guarantees." : string.Empty);
+                            (dialogGen.Random4 == 1)
+                                ? "There are rumors of a well-stocked dromad caravan moving through the area.\n\nMy sources tell me the caravan "
+                                    + "should be passing through "
+                                    + daysTillRestockPhrase
+                                    + ". I'll likely able to pick up some new trinkets at that time."
+                                    + (
+                                        bChanceBasedRestock
+                                            ? "\n\nOf course, they are only rumors, and dromads tend to wander. I can't make any guarantees."
+                                            : string.Empty
+                                    )
+                                : (dialogGen.Random4 == 2)
+                                    ? "My friend, a water baron is coming to visit this area soon. I sent "
+                                        + pronounObj
+                                        + " a list of my requests and should "
+                                        + "have some new stock available after "
+                                        + pronounSubj
+                                        + " arrive"
+                                        + (pronounSubj == "they" ? "" : "s")
+                                        + ".\n\n"
+                                        + "By the movements of the Beetle Moon, I predict "
+                                        + pronounSubj
+                                        + " should be here "
+                                        + daysTillRestockPhrase
+                                        + "."
+                                        + (
+                                            bChanceBasedRestock
+                                                ? "\n\nIn honesty, though, "
+                                                    + pronounSubj
+                                                    + (pronounSubj == "they" ? " are" : " is")
+                                                    + " not the most "
+                                                    + "reliable friend. I can't make any guarantees."
+                                                : string.Empty
+                                        )
+                                    : (dialogGen.Random4 == 3)
+                                        ? "It just so happens my apprentice has come upon a new source of inventory, and is negotiating with the merchant in a "
+                                            + "nearby village.\n\nThose talks should wrap up soon and I expect to have some new stock "
+                                            + daysTillRestockPhrase
+                                            + "."
+                                            + (
+                                                bChanceBasedRestock
+                                                    ? "\n\nOf course, negotiations run like water through the salt. I can't make any guarantees."
+                                                    : string.Empty
+                                            )
+                                        : "I'm glad you asked, friend. Arconauts have been coming in droves from a nearby ruin that was recently unearthed. "
+                                            + "They've been selling me trinkets faster than I can sort them, to be honest. After I manage to get things organized "
+                                            + "I'll have more inventory to offer.\n\nCheck back with me "
+                                            + daysTillRestockPhrase
+                                            + ", and I'll show you what I've got."
+                                            + (
+                                                bChanceBasedRestock
+                                                    ? "\n\nThat is... assuming any of the junk is actually resellable. I can't make any guarantees."
+                                                    : string.Empty
+                                            );
                     }
                     _debugSegmentCounter = 17;
                 }
@@ -249,9 +309,12 @@ namespace XRL.World.Parts
                     ConversationChoice askRestockChoice = new ConversationChoice
                     {
                         ID = "*QudUX_RestockerDiscussionStartChoice",
-                        Text = (rand == 1) ? "Any new wares on the way?"
-                            : (rand == 2) ? "Do you have anything else to sell?"
-                            : "Can you let me know if you get any new stock?",
+                        Text =
+                            (rand == 1)
+                                ? "Any new wares on the way?"
+                                : (rand == 2)
+                                    ? "Do you have anything else to sell?"
+                                    : "Can you let me know if you get any new stock?",
                         GotoID = restockNodeID,
                         ParentNode = startNode,
                         Ordinal = 991 //set to make this appear immediately after the trade option
@@ -267,7 +330,13 @@ namespace XRL.World.Parts
             }
             catch (Exception ex)
             {
-                Debug.Log("QudUX: (Error) Encountered exception in AddChoiceToRestockers (debugSegment: " + _debugSegmentCounter + ", Exception: " + ex.ToString() + ")");
+                Debug.Log(
+                    "QudUX: (Error) Encountered exception in AddChoiceToRestockers (debugSegment: "
+                        + _debugSegmentCounter
+                        + ", Exception: "
+                        + ex.ToString()
+                        + ")"
+                );
                 return false;
             }
         }
@@ -362,12 +431,16 @@ namespace XRL.World.Parts
         {
             return "I'm looking for " + nameList + ".";
         }
+
         public string QuestionLocationOf(string nameList, bool multiple)
         {
             int randVal = Stat.Random(1, 3);
-            string qText = randVal == 1 ? "How can I find " + nameList + "?"
-                         : randVal == 2 ? "Can you help me track down " + nameList + "?"
-                         : "Do you know where " + nameList + (multiple ? " are" : " is") + " located?";
+            string qText =
+                randVal == 1
+                    ? "How can I find " + nameList + "?"
+                    : randVal == 2
+                        ? "Can you help me track down " + nameList + "?"
+                        : "Do you know where " + nameList + (multiple ? " are" : " is") + " located?";
             return qText;
         }
 
@@ -403,13 +476,23 @@ namespace XRL.World.Parts
             if (QudUX_ConversationHelper.ConversationPartner != null)
             {
                 int randNum = Stat.Random(1, 3);
-                Popup.Show(QudUX_ConversationHelper.ConversationPartner.The
-                          + QudUX_ConversationHelper.ConversationPartner.DisplayNameOnly  + "&y "
-                          + ((randNum == 1) ? "points you in the right direction."
-                            : (randNum == 2) ? "gives you a rough layout of the area."
-                            : "gestures disinterestedly, sending you on your way.") );
+                Popup.Show(
+                    QudUX_ConversationHelper.ConversationPartner.The
+                        + QudUX_ConversationHelper.ConversationPartner.DisplayNameOnly
+                        + "&y "
+                        + (
+                            (randNum == 1)
+                                ? "points you in the right direction."
+                                : (randNum == 2)
+                                    ? "gives you a rough layout of the area."
+                                    : "gestures disinterestedly, sending you on your way."
+                        )
+                );
             }
-            if (QudUX_ConversationHelper.PlayerBody != null && QudUX_ConversationHelper.PlayerBody == XRLCore.Core.Game.Player.Body)
+            if (
+                QudUX_ConversationHelper.PlayerBody != null
+                && QudUX_ConversationHelper.PlayerBody == XRLCore.Core.Game.Player.Body
+            )
             {
                 string playerZoneID = QudUX_ConversationHelper.PlayerBody.CurrentCell.ParentZone.ZoneID;
                 foreach (GameObject questGiver in QuestGivers)
@@ -430,11 +513,12 @@ namespace XRL.World.Parts
 
     public class TraderDialogGenData
     {
-        private static readonly Dictionary<GameObject, TraderDialogGenData> _Data = new Dictionary<GameObject, TraderDialogGenData>();
+        private static readonly Dictionary<GameObject, TraderDialogGenData> _Data =
+            new Dictionary<GameObject, TraderDialogGenData>();
         readonly long ExpirationTick;
-        readonly public int Random2;
-        readonly public int Random3;
-        readonly public int Random4;
+        public readonly int Random2;
+        public readonly int Random3;
+        public readonly int Random4;
 
         public TraderDialogGenData(long ticksRemaining)
         {
@@ -455,3 +539,148 @@ namespace XRL.World.Parts
         }
     }
 }
+
+/*
+
+=== QudUX [for 205+ and beta] 2.0 Errors ===
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(410,43):
+error CS0246: The type or namespace name 'ConversationNode' could not be found
+(are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(108,67):
+error CS1061: 'ConversationScript' does not contain a definition for
+'customConversation' and no accessible extension method 'customConversation'
+accepting a first argument of type 'ConversationScript' could be found (are you
+missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(124,27):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(127,27):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(128,31):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(131,51):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(133,39):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(135,39):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(295,27):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(300,21):
+error CS0246: The type or namespace name 'ConversationNode' could not be found
+(are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(300,69):
+error CS0117: 'ConversationsAPI' does not contain a definition for 'newNode'
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(306,21):
+error CS0246: The type or namespace name 'ConversationNode' could not be found
+(are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(306,56):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(309,21):
+error CS0246: The type or namespace name 'ConversationChoice' could not be
+found (are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(309,63):
+error CS0246: The type or namespace name 'ConversationChoice' could not be
+found (are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(379,55):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(382,17):
+error CS0246: The type or namespace name 'ConversationNode' could not be found
+(are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(382,48):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(384,17):
+error CS0246: The type or namespace name 'ConversationChoice' could not be
+found (are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(384,50):
+error CS0246: The type or namespace name 'ConversationChoice' could not be
+found (are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(393,52):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(396,17):
+error CS0246: The type or namespace name 'ConversationNode' could not be found
+(are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(396,48):
+error CS1061: 'Conversation' does not contain a definition for 'NodesByID' and
+no accessible extension method 'NodesByID' accepting a first argument of type
+'Conversation' could be found (are you missing a using directive or an assembly
+reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(398,17):
+error CS0246: The type or namespace name 'ConversationChoice' could not be
+found (are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(398,50):
+error CS0246: The type or namespace name 'ConversationChoice' could not be
+found (are you missing a using directive or an assembly reference?)
+<...>\Mods\QudUX_fork\Parts and Effects\QudUX_ConversationHelper.cs(418,17):
+error CS0246: The type or namespace name 'ConversationChoice' could not be
+found (are you missing a using directive or an assembly reference?)
+== Warnings ==
+<...>\Mods\QudUX_fork\Screen Extenders\JournalScreenExtender.cs(73,87): warning
+CS0612: 'JournalMapNote.zoneid' is obsolete
+<...>\Mods\QudUX_fork\Screen Extenders\JournalScreenExtender.cs(74,70): warning
+CS0612: 'JournalMapNote.zoneid' is obsolete
+<...>\Mods\QudUX_fork\Harmony
+Patches\Patch_XRL_World_BeginConversationEvent.cs(16,17): warning CS0618:
+'GameObject.validate(ref GameObject)' is obsolete: 'use Validate(), will be
+removed after Q1 2024'
+<...>\Mods\QudUX_fork\Parts and
+Effects\QudUX_LegendaryInteractionListener.cs(94,36): warning CS0618:
+'Factions.getIfExists(string)' is obsolete: 'use GetIfExists(), will be removed
+after Q2 2024'
+<...>\Mods\QudUX_fork\Parts and
+Effects\QudUX_LegendaryInteractionListener.cs(97,56): warning CS0618:
+'Faction.getFormattedName()' is obsolete: 'Use GetFormattedName(), will be
+removed after Q2 2024'
+<...>\Mods\QudUX_fork\Parts and
+Effects\QudUX_LegendaryInteractionListener.cs(102,37): warning CS0618:
+'Factions.getIfExists(string)' is obsolete: 'use GetIfExists(), will be removed
+after Q2 2024'
+<...>\Mods\QudUX_fork\Parts and
+Effects\QudUX_LegendaryInteractionListener.cs(107,62): warning CS0618:
+'Faction.getFormattedName(string)' is obsolete: 'use GetFormattedName(), will
+be removed after Q2 2024'
+<...>\Mods\QudUX_fork\Parts and
+Effects\QudUX_LegendaryInteractionListener.cs(111,63): warning CS0618:
+'Faction.getFormattedName(string)' is obsolete: 'use GetFormattedName(), will
+be removed after Q2 2024'
+<...>\Mods\QudUX_fork\Parts and
+Effects\QudUX_LegendaryInteractionListener.cs(115,60): warning CS0618:
+'Faction.getFormattedName(string)' is obsolete: 'use GetFormattedName(), will
+be removed after Q2 2024'
+<...>\Mods\QudUX_fork\Screens\QudUX_InventoryScreen.cs(330,49): warning CS0618:
+'GameObject.create(string)' is obsolete: 'use Create(), will be removed after
+Q1 2024'
+
+*/

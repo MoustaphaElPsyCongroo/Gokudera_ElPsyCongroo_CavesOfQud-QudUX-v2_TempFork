@@ -38,6 +38,71 @@ namespace XRL.World.Parts
             return AutogetSettings.GetValue($"ShouldAutoget:{thing.Blueprint}", "").EqualsNoCase("No");
         }
 
+        public bool ShouldAutoget(GameObject O)
+        {
+            if (!O.CanAutoget())
+            {
+                return false;
+            }
+            if (Options.AutogetSpecialItems && O.IsSpecialItem())
+            {
+                return true;
+            }
+            if (Options.AutogetArtifacts && O.GetPart("Examiner") is Examiner examiner)
+            {
+                return examiner.Complexity > 0;
+            }
+            string InventoryCategory = O.GetInventoryCategory();
+            if (InventoryCategory == "Trade Goods")
+            {
+                return Options.AutogetTradeGoods;
+            }
+            if (InventoryCategory == "Food")
+            {
+                return Options.AutogetFood;
+            }
+            if (InventoryCategory == "Books")
+            {
+                return Options.AutogetBooks;
+            }
+
+            bool flag = false;
+            double num = 0.0;
+            if (Options.AutogetFreshWater && O.ContainsFreshWater())
+            {
+                if (!flag)
+                {
+                    num = O.GetWeight();
+                    flag = true;
+                }
+                if (num <= 1.0)
+                {
+                    return true;
+                }
+            }
+            if (Options.AutogetZeroWeight)
+            {
+                if (!flag)
+                {
+                    num = O.GetWeight();
+                    flag = true;
+                }
+                if (num <= 0.0)
+                {
+                    return true;
+                }
+            }
+            if (Options.AutogetNuggets && O.HasTagOrProperty("Nugget"))
+            {
+                return true;
+            }
+            if (Options.AutogetScrap && XRL.World.Tinkering.TinkeringHelpers.ConsiderScrap(O, ThePlayer))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public override bool WantEvent(int ID, int cascade)
         {
             return base.WantEvent(ID, cascade) || ID == OwnerGetInventoryActionsEvent.ID || ID == InventoryActionEvent.ID;
@@ -56,7 +121,11 @@ namespace XRL.World.Parts
                 E.Object.RemoveIntProperty("DroppedByPlayer");
             }
             TemporarilyIgnoreQudUXSettings = true;
-            bool isAutogetItem = E.Object.ShouldAutoget();
+            // Replaced original ShouldAutoget method since it doesn't take
+            // artifacts into account
+            // bool isAutogetItem = E.Object.ShouldAutoget();
+            bool isAutogetItem = ShouldAutoget(E.Object);
+
             TemporarilyIgnoreQudUXSettings = false;
             if (wasDropped)
             {
@@ -66,7 +135,12 @@ namespace XRL.World.Parts
             {
                 if (IsAutogetDisabledByQudUX(E.Object))
                 {
-                    E.AddAction("Re-enable auto-pickup for this item", "re-enable auto-pickup", CmdEnableAutoget, FireOnActor: true);
+                    E.AddAction(
+                        "Re-enable auto-pickup for this item",
+                        "re-enable auto-pickup",
+                        CmdEnableAutoget,
+                        FireOnActor: true
+                    );
                 }
                 else
                 {
@@ -86,9 +160,15 @@ namespace XRL.World.Parts
                     DialogResult choice = DialogResult.Cancel;
                     while (choice != DialogResult.Yes && choice != DialogResult.No)
                     {
-                        choice = Popup.ShowYesNo("Disabling auto-pickup for " + Grammar.Pluralize(E.Item.DisplayNameOnly) + ".\n\n"
-                            + "Changes to auto-pickup preferences will apply to ALL of your characters. "
-                            + "If you proceed, this message will not be shown again.\n\nProceed?", false, DialogResult.Cancel);
+                        choice = Popup.ShowYesNo(
+                            "Disabling auto-pickup for "
+                                + Grammar.Pluralize(E.Item.DisplayNameOnly)
+                                + ".\n\n"
+                                + "Changes to auto-pickup preferences will apply to ALL of your characters. "
+                                + "If you proceed, this message will not be shown again.\n\nProceed?",
+                            false,
+                            DialogResult.Cancel
+                        );
                     }
                     if (choice == DialogResult.Yes)
                     {

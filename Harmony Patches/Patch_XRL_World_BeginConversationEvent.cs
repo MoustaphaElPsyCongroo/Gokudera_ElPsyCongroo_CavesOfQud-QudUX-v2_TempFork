@@ -1,5 +1,6 @@
 using HarmonyLib;
 using XRL.World;
+using XRL.World.Conversations;
 
 namespace QudUX.HarmonyPatches
 {

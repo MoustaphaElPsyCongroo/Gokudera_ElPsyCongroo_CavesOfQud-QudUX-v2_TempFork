@@ -1,5 +1,13 @@
 {
 "Metadata:InfoboxWasShown":"Yes",
+"ShouldAutoget:Sowers_Seed":"No",
 "ShouldAutoget:cats_bonedart":"No",
-"ShouldAutoget:BoxOfCrayons":"No"
+"ShouldAutoget:Scrap Crystal":"No",
+"ShouldAutoget:Raven_Simple Electrical Generation Chip":"No",
+"ShouldAutoget:HW_IncendiaryRocket":"No",
+"ShouldAutoget:HW_SmallIncendiaryRocket":"No",
+"ShouldAutoget:HW_ThermobaricRocket":"No",
+"ShouldAutoget:HW_PhosphorousRocket":"No",
+"ShouldAutoget:Scrap Metal":"No",
+"ShouldAutoget:Fidget Cell":"No"
 }

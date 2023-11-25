@@ -15,13 +15,16 @@ namespace XRL.UI
     //I haven't edited in all cases. I've cleaned things up in a few places where I was making larger
     //adjustments, but the code is still a bit funky. I don't want to refactor it too much in case
     //further changes are made in the base game that cause me to return here and compare or update.
-    [UIView("QudUX:Inventory", ForceFullscreen: true, NavCategory: "Charactersheet,Menu,Nocancelescape", UICanvas: null)]
+    [UIView("QudUX:Inventory", ForceFullscreen: true, NavCategory: "Menu", UICanvas: null)]
     public class QudUX_InventoryScreen : IScreen, IWantsTextConsoleInit
     {
         static Dictionary<char, GameObject> SelectionList = new Dictionary<char, GameObject>();
-        static Dictionary<char, QudUX_CategorySelectionListEntry> CategorySelectionList = new Dictionary<char, QudUX_CategorySelectionListEntry>();
-        static Dictionary<string, List<GameObject>> CategoryMap = new Dictionary<string, List<GameObject>>();
-        static Dictionary<string, QudUX_InventoryCategory> CategoryList = new Dictionary<string, QudUX_InventoryCategory>();
+        static Dictionary<char, QudUX_CategorySelectionListEntry> CategorySelectionList =
+            new Dictionary<char, QudUX_CategorySelectionListEntry>();
+        static Dictionary<string, List<GameObject>> CategoryMap =
+            new Dictionary<string, List<GameObject>>();
+        static Dictionary<string, QudUX_InventoryCategory> CategoryList =
+            new Dictionary<string, QudUX_InventoryCategory>();
         static List<GameObject> SortList;
         static List<string> Categories = new List<string>();
 
@@ -62,9 +65,13 @@ namespace XRL.UI
             }
         }
 
-        public static void RebuildLists( GameObject GO, InventoryScreenExtender.TabController TabController )
+        public static void RebuildLists(
+            GameObject GO,
+            InventoryScreenExtender.TabController TabController
+        )
         {
-            QudUX_InventoryScreenState SavedInventoryState = GO.RequirePart<QudUX_InventoryScreenState>();
+            QudUX_InventoryScreenState SavedInventoryState =
+                GO.RequirePart<QudUX_InventoryScreenState>();
             //TabController.RecalculateWeights(GO);
             // Inventory pInventory = GO.GetPart("Inventory") as Inventory;
             Inventory inventory = GO.Inventory;
@@ -85,9 +92,12 @@ namespace XRL.UI
                 GameObject Obj = Objs[x];
                 if (!Obj.HasTag("HiddenInInventory"))
                 {
-
                     string iCategory = Obj.GetInventoryCategory();
-                    if (bIsFiltered && !Obj.GetCachedDisplayNameForSort().Contains(FilterString, CompareOptions.IgnoreCase))
+                    if (
+                        bIsFiltered
+                        && !Obj.GetCachedDisplayNameForSort()
+                            .Contains(FilterString, CompareOptions.IgnoreCase)
+                    )
                     {
                         ItemsSkippedByFilter++;
                         continue;
@@ -106,7 +116,10 @@ namespace XRL.UI
                     if (!CategoryList.ContainsKey(iCategory))
                     {
                         bool bExpandState = SavedInventoryState.GetExpandState(iCategory);
-                        CategoryList.Add(iCategory, new QudUX_InventoryCategory(iCategory, bExpandState));
+                        CategoryList.Add(
+                            iCategory,
+                            new QudUX_InventoryCategory(iCategory, bExpandState)
+                        );
                         Categories.Add(iCategory);
                     }
 
@@ -131,10 +144,11 @@ namespace XRL.UI
             if (CategorySort == -1)
             {
                 SortList = inventory.GetObjects();
-                SortList.Sort((GameObject a, GameObject b) => a.SortVs(b, null, UseCategory: false));
+                SortList.Sort(
+                    (GameObject a, GameObject b) => a.SortVs(b, null, UseCategory: false)
+                );
             }
-            else
-            if (Categories[CategorySort] == "Category")
+            else if (Categories[CategorySort] == "Category")
             {
                 SortList = inventory.GetObjects();
                 SortList.Sort((GameObject a, GameObject b) => a.SortVs(b));
@@ -145,7 +159,9 @@ namespace XRL.UI
                 {
                     SortList = CategoryMap[Categories[CategorySort]];
                 }
-                SortList.Sort((GameObject a, GameObject b) => a.SortVs(b, null, UseCategory: false));
+                SortList.Sort(
+                    (GameObject a, GameObject b) => a.SortVs(b, null, UseCategory: false)
+                );
             }
 
             int nEntries = 0;
@@ -194,13 +210,18 @@ namespace XRL.UI
                             nObject++;
                             nEntries++;
 
-                            if (nObject >= StartObject && nObject <= listHeightMinusOne + StartObject)
+                            if (
+                                nObject >= StartObject
+                                && nObject <= listHeightMinusOne + StartObject
+                            )
                             {
-                                CategorySelectionList.Add(c, new QudUX_CategorySelectionListEntry(Obj));
+                                CategorySelectionList.Add(
+                                    c,
+                                    new QudUX_CategorySelectionListEntry(Obj)
+                                );
                                 c++;
                             }
-                            else
-                            if (nObject > listHeightMinusOne + StartObject)
+                            else if (nObject > listHeightMinusOne + StartObject)
                             {
                                 bMore = true;
                                 break;
@@ -267,8 +288,7 @@ namespace XRL.UI
                 {
                     RemovedCategories.Add(sCat);
                 }
-                else
-                if (CategoryMap[sCat].Count == 0)
+                else if (CategoryMap[sCat].Count == 0)
                 {
                     RemovedCategories.Add(sCat);
                 }
@@ -287,14 +307,13 @@ namespace XRL.UI
             }
         }
 
-
-
-
         public ScreenReturn Show(GameObject GO)
         {
             GameManager.Instance.PushGameView("QudUX:Inventory");
-            QudUX_InventoryScreenState SavedInventoryState = GO.RequirePart<QudUX_InventoryScreenState>();
-            InventoryScreenExtender.TabController TabController = new InventoryScreenExtender.TabController(GO);
+            QudUX_InventoryScreenState SavedInventoryState =
+                GO.RequirePart<QudUX_InventoryScreenState>();
+            InventoryScreenExtender.TabController TabController =
+                new InventoryScreenExtender.TabController(GO);
             Inventory pInventory = GO.GetPart("Inventory") as Inventory;
             Body pBody = GO.GetPart("Body") as Body;
             ResetNameCache(GO);
@@ -315,7 +334,13 @@ namespace XRL.UI
                 //temporarily disable unity prefab animations in the zone from coordinates 9,3 to 9,22 - this
                 //is the area where we'll render tiles and where those animations would potentially animate
                 //through the inventory screen.
-                disabledObjectsWithImposters = ImposterUtilities.DisableImposters(GO.CurrentZone, 9, 3, 9, 22);
+                disabledObjectsWithImposters = ImposterUtilities.DisableImposters(
+                    GO.CurrentZone,
+                    9,
+                    3,
+                    9,
+                    22
+                );
             }
 
             while (!bDone)
@@ -327,8 +352,20 @@ namespace XRL.UI
                 redrawnorebuild:
 
                 Buffer.Clear();
-                Buffer.SingleBox(0, 0, 79, 24, ColorUtility.MakeColor(TextColor.Grey, TextColor.Black));
-                Buffer.SingleBox(0, 0, 79, 2, ColorUtility.MakeColor(TextColor.Grey, TextColor.Black));
+                Buffer.SingleBox(
+                    0,
+                    0,
+                    79,
+                    24,
+                    ColorUtility.MakeColor(TextColor.Grey, TextColor.Black)
+                );
+                Buffer.SingleBox(
+                    0,
+                    0,
+                    79,
+                    2,
+                    ColorUtility.MakeColor(TextColor.Grey, TextColor.Black)
+                );
                 //Connect box intersections
                 Buffer.Goto(0, 2);
                 Buffer.Write(195);
@@ -350,8 +387,7 @@ namespace XRL.UI
                     .Append(pInventory.GetWeight() + pBody.GetWeight())
                     .Append(" {{y|/}}  ")
                     .Append(pInventory.ParentObject.GetMaxCarriedWeight())
-                    .Append(" lbs.}}")
-                ;
+                    .Append(" lbs.}}");
                 Buffer.Goto(79 - ColorUtility.LengthExceptFormatting(WeightString), 23);
                 Buffer.Write(WeightString.ToString());
 
@@ -384,18 +420,17 @@ namespace XRL.UI
                         StringBuilder sWeight = Event.NewStringBuilder();
                         StringBuilder sCount = Event.NewStringBuilder();
                         char color = (nObject == nSelected) ? 'Y' : 'K';
-                        sCount
-                            .Append("{{")
-                            .Append(color)
-                            .Append('|')
-                        ;
+                        sCount.Append("{{").Append(color).Append('|');
                         if (Options.ShowNumberOfItems)
                         {
                             sCount
                                 .Append(", ")
                                 .Append(CategorySelectionList[keychar].Category.Items)
-                                .Append(CategorySelectionList[keychar].Category.Items == 1 ? " item" : " items")
-                            ;
+                                .Append(
+                                    CategorySelectionList[keychar].Category.Items == 1
+                                        ? " item"
+                                        : " items"
+                                );
                         }
                         sCount.Append("}}");
 
@@ -404,41 +439,41 @@ namespace XRL.UI
                             .Append(nObject == nSelected ? 'Y' : 'y')
                             .Append("|[")
                             .Append(CategorySelectionList[keychar].Category.Weight)
-                            .Append("#]}}")
-                        ;
+                            .Append("#]}}");
 
-                        string expansionSymbol = CategorySelectionList[keychar].Category.Expanded ? "[-] " : "[+] ";
+                        string expansionSymbol = CategorySelectionList[keychar].Category.Expanded
+                            ? "[-] "
+                            : "[+] ";
 
                         if (nObject == nSelected)
                         {
                             StringBuilder SB = Event.NewStringBuilder();
-                            SB
-                                .Append(nStart)
+                            SB.Append(nStart)
                                 .Append(expansionSymbol)
                                 .Append(keychar)
                                 .Append(") {{K|[{{Y|")
                                 .Append(CategorySelectionList[keychar].Category.Name)
                                 .Append(sCount)
-                                .Append("}}]}}")
-                            ;
+                                .Append("}}]}}");
                             Buffer.Write(SB.ToString());
                         }
                         else
                         {
                             StringBuilder SB = Event.NewStringBuilder();
-                            SB
-                                .Append(nStart)
+                            SB.Append(nStart)
                                 .Append(expansionSymbol)
                                 .Append(keychar)
                                 .Append(") {{K|[")
                                 .Append(CategorySelectionList[keychar].Category.Name)
                                 .Append(sCount)
-                                .Append("]}}")
-                            ;
+                                .Append("]}}");
                             Buffer.Write(SB.ToString());
                         }
 
-                        Buffer.Goto(79 - ColorUtility.LengthExceptFormatting(sWeight), yStart + nObject);
+                        Buffer.Goto(
+                            79 - ColorUtility.LengthExceptFormatting(sWeight),
+                            yStart + nObject
+                        );
                         Buffer.Write(sWeight);
 
                         ItemMap.Add(keychar, nObject);
@@ -459,16 +494,14 @@ namespace XRL.UI
 
                         Buffer.Goto(xStart, yStart + nObject);
                         StringBuilder SB = Event.NewStringBuilder();
-                        SB
-                            .Append(nStart)
-                            .Append(keychar)
-                            .Append(") ")
-                        ;
+                        SB.Append(nStart).Append(keychar).Append(") ");
                         Buffer.Write(SB.ToString());
 
                         if (bShowInventoryTiles)
                         {
-                            TileMaker objectTileInfo = new TileMaker(CategorySelectionList[keychar].Object);
+                            TileMaker objectTileInfo = new TileMaker(
+                                CategorySelectionList[keychar].Object
+                            );
                             objectTileInfo.WriteTileToBuffer(Buffer);
                             Buffer.X += 1;
                         }
@@ -476,13 +509,17 @@ namespace XRL.UI
 
                         bool shouldHighlight = (nObject == nSelected);
                         StringBuilder detailString = Event.NewStringBuilder();
-                        if (AltDisplayMode == false || QudUX.Concepts.Options.UI.ViewItemValues == false)
+                        if (
+                            AltDisplayMode == false
+                            || QudUX.Concepts.Options.UI.ViewItemValues == false
+                        )
                         {
                             Physics pPhysics = CategorySelectionList[keychar].Object.pPhysics;
                             if (pPhysics != null)
                             {
                                 int nWeight = pPhysics.Weight;
-                                detailString.Append(" {{")
+                                detailString
+                                    .Append(" {{")
                                     .Append(shouldHighlight ? 'Y' : 'K')
                                     .Append("|")
                                     .Append(nWeight)
@@ -491,11 +528,18 @@ namespace XRL.UI
                         }
                         else
                         {
-                            string valuePerPound = InventoryScreenExtender.GetItemValueString(CategorySelectionList[keychar].Object, fakeTraderForPriceEval, shouldHighlight);
+                            string valuePerPound = InventoryScreenExtender.GetItemValueString(
+                                CategorySelectionList[keychar].Object,
+                                fakeTraderForPriceEval,
+                                shouldHighlight
+                            );
                             detailString.Append(valuePerPound);
                         }
                         detailString.Append((char)179); //right box border segment in case item name overflowed the screen
-                        Buffer.Goto(80 - ColorUtility.LengthExceptFormatting(detailString), yStart + nObject);
+                        Buffer.Goto(
+                            80 - ColorUtility.LengthExceptFormatting(detailString),
+                            yStart + nObject
+                        );
                         Buffer.Write(detailString);
 
                         ItemMap.Add(keychar, nObject);
@@ -503,7 +547,7 @@ namespace XRL.UI
                     }
                 }
 
-                if( nObject == 0 && StartObject != 0 )
+                if (nObject == 0 && StartObject != 0)
                 {
                     StartObject = 0;
                     goto redraw;
@@ -511,7 +555,7 @@ namespace XRL.UI
 
                 if (nSelected >= nObject)
                 {
-                    nSelected = nObject-1;
+                    nSelected = nObject - 1;
                     goto redraw;
                 }
 
@@ -537,10 +581,17 @@ namespace XRL.UI
 
                     if (CategorySelectionList.Count == 0)
                     {
-                        if (TabController.CurrentTab != "Main" && TabController.CurrentTab != "Other")
+                        if (
+                            TabController.CurrentTab != "Main"
+                            && TabController.CurrentTab != "Other"
+                        )
                         {
                             Buffer.Goto(4, 5);
-                            Buffer.Write("{{y|You are not carrying any " + TabController.CurrentTab.ToLower() + ".}}");
+                            Buffer.Write(
+                                "{{y|You are not carrying any "
+                                    + TabController.CurrentTab.ToLower()
+                                    + ".}}"
+                            );
                         }
                     }
 
@@ -561,7 +612,9 @@ namespace XRL.UI
                             Buffer.Goto(4, 5);
                             Buffer.Write("{{y|There are no item categories here.}}");
                             Buffer.Goto(4, 7);
-                            Buffer.Write("{{y|Select a category on the {{Y|Main}} tab and press {{W|Ctrl}}+{{W|M}} to move it here.}}");
+                            Buffer.Write(
+                                "{{y|Select a category on the {{Y|Main}} tab and press {{W|Ctrl}}+{{W|M}} to move it here.}}"
+                            );
                         }
                     }
                 }
@@ -584,7 +637,7 @@ namespace XRL.UI
 
                 keys = ConsoleLib.Console.Keyboard.getvk(Options.MapDirectionsToKeypad, true);
                 string ts = "";
-                char ch = (ts + (char) Keyboard.Char + " ").ToLower()[0];
+                char ch = (ts + (char)Keyboard.Char + " ").ToLower()[0];
                 if (keys == Keys.Enter)
                 {
                     keys = Keys.Space;
@@ -598,18 +651,22 @@ namespace XRL.UI
                 {
                     InventoryScreenExtender.HelpText.Show();
                 }
-                else
-                if ((int) keys == 131137) // ctrl+a
+                else if ((int)keys == 131137) // ctrl+a
                 {
                     if (CurrentObject != null)
                     {
-                        InventoryActionEvent.Check(out SentEvent, CurrentObject, GO, CurrentObject, "Eat");
+                        InventoryActionEvent.Check(
+                            out SentEvent,
+                            CurrentObject,
+                            GO,
+                            CurrentObject,
+                            "Eat"
+                        );
                         ResetNameCache(GO);
                         ClearLists();
                     }
                 }
-                else
-                if ((int)keys == 131140) // ctrl+d
+                else if ((int)keys == 131140) // ctrl+d
                 {
                     if (CurrentObject != null)
                     {
@@ -620,49 +677,66 @@ namespace XRL.UI
                         ClearLists();
                     }
                 }
-                else
-                if ((int)keys == 131142 || ch == ',') // ctrl+f
+                else if ((int)keys == 131142 || ch == ',') // ctrl+f
                 {
-                    FilterString = Popup.AskString("Enter text to filter inventory by item name.", FilterString, 80, 0);
+                    FilterString = Popup.AskString(
+                        "Enter text to filter inventory by item name.",
+                        FilterString,
+                        80,
+                        0
+                    );
                     ClearLists();
                 }
-                else
-                if (keys == Keys.Delete)
+                else if (keys == Keys.Delete)
                 {
                     FilterString = "";
                     ClearLists();
                 }
-                else
-                if ((int)keys == 131154) // ctrl+r
+                else if ((int)keys == 131154) // ctrl+r
                 {
                     if (CurrentObject != null)
                     {
-                        InventoryActionEvent.Check(out SentEvent, CurrentObject, GO, CurrentObject, "Drink");
+                        InventoryActionEvent.Check(
+                            out SentEvent,
+                            CurrentObject,
+                            GO,
+                            CurrentObject,
+                            "Drink"
+                        );
                         ResetNameCache(GO);
                     }
                 }
-                else
-                if ((int)keys == 131152) // ctrl+p
+                else if ((int)keys == 131152) // ctrl+p
                 {
                     if (CurrentObject != null)
                     {
-                        InventoryActionEvent.Check(out SentEvent, CurrentObject, GO, CurrentObject, "Apply");
+                        InventoryActionEvent.Check(
+                            out SentEvent,
+                            CurrentObject,
+                            GO,
+                            CurrentObject,
+                            "Apply"
+                        );
                         ResetNameCache(GO);
                         ClearLists();
                     }
                 }
-                else
-                if (keys == Keys.NumPad7 || (keys == Keys.NumPad9 && Keyboard.RawCode != Keys.PageUp && Keyboard.RawCode != Keys.Next))
+                else if (
+                    keys == Keys.NumPad7
+                    || (
+                        keys == Keys.NumPad9
+                        && Keyboard.RawCode != Keys.PageUp
+                        && Keyboard.RawCode != Keys.Next
+                    )
+                )
                 {
                     bDone = true;
                 }
-                else
-                if (keys == Keys.Escape || keys == Keys.NumPad5)
+                else if (keys == Keys.Escape || keys == Keys.NumPad5)
                 {
                     bDone = true;
                 }
-                else
-                if (keys == Keys.NumPad8)
+                else if (keys == Keys.NumPad8)
                 {
                     if (nSelected > 0)
                     {
@@ -671,49 +745,58 @@ namespace XRL.UI
                     }
                     else
                     {
-                        if( StartObject > 0 ) StartObject--;
+                        if (StartObject > 0)
+                            StartObject--;
                     }
                 }
-                else
-                if (keys == Keys.NumPad2)
+                else if (keys == Keys.NumPad2)
                 {
-                    if( nSelected < nObject-1 )
+                    if (nSelected < nObject - 1)
                     {
                         nSelected++;
                         goto redrawnorebuild;
                     }
                     else
                     {
-                        if(bMore) StartObject++;
+                        if (bMore)
+                            StartObject++;
                     }
                 }
-                else
-                if (keys == Keys.PageDown || keys == Keys.Next || Keyboard.RawCode == Keys.Next || Keyboard.RawCode == Keys.PageDown)
+                else if (
+                    keys == Keys.PageDown
+                    || keys == Keys.Next
+                    || Keyboard.RawCode == Keys.Next
+                    || Keyboard.RawCode == Keys.PageDown
+                )
                 {
-                    if (nSelected < nObject-1)
+                    if (nSelected < nObject - 1)
                     {
-                        nSelected = nObject-1;
+                        nSelected = nObject - 1;
                     }
                     else if (bMore)
                     {
                         StartObject += (InventoryListHeight - 1);
                     }
                 }
-                else
-                if (keys == Keys.PageUp || keys == Keys.Back || Keyboard.RawCode == Keys.PageUp || Keyboard.RawCode == Keys.Back)
+                else if (
+                    keys == Keys.PageUp
+                    || keys == Keys.Back
+                    || Keyboard.RawCode == Keys.PageUp
+                    || Keyboard.RawCode == Keys.Back
+                )
                 {
-                    if( nSelected > 0 )
+                    if (nSelected > 0)
                     {
                         nSelected = 0;
                     }
                     else
                     {
                         StartObject -= (InventoryListHeight - 1);
-                        if (StartObject < 0) StartObject = 0;
+                        if (StartObject < 0)
+                            StartObject = 0;
                     }
                 }
-                else
-                if (keys == Keys.Subtract || keys == Keys.OemMinus)
+                else if (keys == Keys.Subtract || keys == Keys.OemMinus)
                 {
                     foreach (QudUX_InventoryCategory Cat in CategoryList.Values)
                     {
@@ -743,7 +826,9 @@ namespace XRL.UI
                     StartObject = 0;
                     nSelected = 0;
                 }
-                else if (keys == Keys.NumPad0 || keys == Keys.D0 || keys == Keys.OemPeriod || ch == '.')
+                else if (
+                    keys == Keys.NumPad0 || keys == Keys.D0 || keys == Keys.OemPeriod || ch == '.'
+                )
                 {
                     AltDisplayMode = !AltDisplayMode;
                 }
@@ -769,7 +854,10 @@ namespace XRL.UI
                     {
                         if (TabController.CurrentTab == "Main")
                         {
-                            string message = "{{y|Move the {{K|[{{Y|" + iCategory + "}}]}} category to the {{Y|Other}} tab?}}";
+                            string message =
+                                "{{y|Move the {{K|[{{Y|"
+                                + iCategory
+                                + "}}]}} category to the {{Y|Other}} tab?}}";
                             if (Popup.ShowYesNo(message) == DialogResult.Yes)
                             {
                                 TabController.MoveCategoryFromMainToOther(iCategory);
@@ -778,7 +866,10 @@ namespace XRL.UI
                         }
                         else if (TabController.CurrentTab == "Other")
                         {
-                            string message = "{{y|Move the {{K|[{{Y|" + iCategory + "}}]}} category to the {{Y|Main}} tab?}}";
+                            string message =
+                                "{{y|Move the {{K|[{{Y|"
+                                + iCategory
+                                + "}}]}} category to the {{Y|Main}} tab?}}";
                             if (Popup.ShowYesNo(message) == DialogResult.Yes)
                             {
                                 TabController.MoveCategoryFromOtherToMain(iCategory);
@@ -799,12 +890,19 @@ namespace XRL.UI
                             }
                         }
 
-                        if (keys == Keys.NumPad1 || keys == Keys.D1 || keys == (Keys.Control | Keys.Left) || keys == (Keys.Control | Keys.NumPad4) || keys == (Keys.Control | Keys.Subtract) || keys == (Keys.Control | Keys.OemMinus))
+                        if (
+                            keys == Keys.NumPad1
+                            || keys == Keys.D1
+                            || keys == (Keys.Control | Keys.Left)
+                            || keys == (Keys.Control | Keys.NumPad4)
+                            || keys == (Keys.Control | Keys.Subtract)
+                            || keys == (Keys.Control | Keys.OemMinus)
+                        )
                         {
                             //collapse the parent category for this item
-                            foreach( var pair in CategoryMap )
+                            foreach (var pair in CategoryMap)
                             {
-                                if( pair.Value.Contains( CurrentObject ))
+                                if (pair.Value.Contains(CurrentObject))
                                 {
                                     CategoryList[pair.Key].Expanded = false;
                                     SavedInventoryState.SetExpandState(pair.Key, false);
@@ -829,13 +927,27 @@ namespace XRL.UI
 
                     if (CurrentCategory != null)
                     {
-                        if (keys == Keys.NumPad1 || keys == Keys.D1 || keys == (Keys.Control | Keys.Left) || keys == (Keys.Control | Keys.NumPad4) || keys == (Keys.Control | Keys.Subtract) || keys == (Keys.Control | Keys.OemMinus))
+                        if (
+                            keys == Keys.NumPad1
+                            || keys == Keys.D1
+                            || keys == (Keys.Control | Keys.Left)
+                            || keys == (Keys.Control | Keys.NumPad4)
+                            || keys == (Keys.Control | Keys.Subtract)
+                            || keys == (Keys.Control | Keys.OemMinus)
+                        )
                         {
                             CurrentCategory.Expanded = false;
                             SavedInventoryState.SetExpandState(CurrentCategory.Name, false);
                         }
 
-                        if (keys == Keys.NumPad3 || keys == Keys.D3 || keys == (Keys.Control | Keys.Right) || keys == (Keys.Control | Keys.NumPad6) || keys == (Keys.Control | Keys.Add) || keys == (Keys.Control | Keys.Oemplus))
+                        if (
+                            keys == Keys.NumPad3
+                            || keys == Keys.D3
+                            || keys == (Keys.Control | Keys.Right)
+                            || keys == (Keys.Control | Keys.NumPad6)
+                            || keys == (Keys.Control | Keys.Add)
+                            || keys == (Keys.Control | Keys.Oemplus)
+                        )
                         {
                             CurrentCategory.Expanded = true;
                             SavedInventoryState.SetExpandState(CurrentCategory.Name, true);
@@ -850,7 +962,13 @@ namespace XRL.UI
 
                     if (keys >= Keys.A && keys <= Keys.Z && CategorySelectionList.ContainsKey(ch))
                     {
-                        if( nSelected == ItemMap[(char)ch] && (!CategorySelectionList.ContainsKey(ch) || CategorySelectionList[ch].Category == null))
+                        if (
+                            nSelected == ItemMap[(char)ch]
+                            && (
+                                !CategorySelectionList.ContainsKey(ch)
+                                || CategorySelectionList[ch].Category == null
+                            )
+                        )
                         {
                             EquipmentAPI.TwiddleObject(GO, CurrentObject, ref bDone);
                             ResetNameCache(GO);
@@ -858,10 +976,16 @@ namespace XRL.UI
                         else
                         {
                             nSelected = ItemMap[(char)ch];
-                            if (CategorySelectionList.ContainsKey(ch) && CategorySelectionList[ch].Category != null)
+                            if (
+                                CategorySelectionList.ContainsKey(ch)
+                                && CategorySelectionList[ch].Category != null
+                            )
                             {
-                                CategorySelectionList[ch].Category.Expanded = !CategorySelectionList[ch].Category.Expanded;
-                                SavedInventoryState.ToggleExpandState(CategorySelectionList[ch].Category.Name);
+                                CategorySelectionList[ch].Category.Expanded =
+                                    !CategorySelectionList[ch].Category.Expanded;
+                                SavedInventoryState.ToggleExpandState(
+                                    CategorySelectionList[ch].Category.Name
+                                );
                             }
                         }
                     }
@@ -893,7 +1017,6 @@ namespace XRL.UI
             GameManager.Instance.PopGameView();
             return ScreenReturn.Exit;
         }
-
     }
 
     /// <summary>

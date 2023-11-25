@@ -27,11 +27,15 @@ namespace QudUX.ScreenExtenders
                 + JoinLine("Collapse/expand all", "{{W|+}} or {{W|-}}")
                 + JoinLine("Collapse/expand current", "{{W|1}} or {{W|3}}");
 
-            private static readonly string sControlsValueMode =
-                JoinLine("Toggle weight/value mode", "{{W|.}} or {{W|0}}");
+            private static readonly string sControlsValueMode = JoinLine(
+                "Toggle weight/value mode",
+                "{{W|.}} or {{W|0}}"
+            );
 
-            private static readonly string sControlsEnd =
-                JoinLine("Filter", "{{W|,}} or {{W|Ctrl}}+{{W|F}}");
+            private static readonly string sControlsEnd = JoinLine(
+                "Filter",
+                "{{W|,}} or {{W|Ctrl}}+{{W|F}}"
+            );
 
             private static readonly string sQuickActions =
                 "\n{{Y|Item quick actions}}\n"
@@ -48,7 +52,12 @@ namespace QudUX.ScreenExtenders
                 {
                     if (Options.UI.ViewItemValues)
                     {
-                        return "{{y|" + sControlsBase + sControlsValueMode + sControlsEnd + sQuickActions + "}}";
+                        return "{{y|"
+                            + sControlsBase
+                            + sControlsValueMode
+                            + sControlsEnd
+                            + sQuickActions
+                            + "}}";
                     }
                     return "{{y|" + sControlsBase + sControlsEnd + sQuickActions + "}}";
                 }
@@ -74,17 +83,39 @@ namespace QudUX.ScreenExtenders
                 "Trade Goods",
                 "Other"
             };
-            private static readonly Dictionary<string, List<string>> TabCategories = new Dictionary<string, List<string>>
+            private static readonly Dictionary<string, List<string>> TabCategories = new Dictionary<
+                string,
+                List<string>
+            >
             {
-                { "Main",        null },
-                { "Liquids",     new List<string> { "Water Container" } },
-                { "Tonics",      new List<string> { "Tonics", "Meds" } },
-                { "Food",        new List<string> { "Food" } },
-                { "Books",       new List<string> { "Books" } },
-                { "Trade Goods", new List<string> { "Trade Goods" } },
-                { "Other",       new List<string> { } },
+                { "Main", null },
+                {
+                    "Liquids",
+                    new List<string> { "Water Container" }
+                },
+                {
+                    "Tonics",
+                    new List<string> { "Tonics", "Meds" }
+                },
+                {
+                    "Food",
+                    new List<string> { "Food" }
+                },
+                {
+                    "Books",
+                    new List<string> { "Books" }
+                },
+                {
+                    "Trade Goods",
+                    new List<string> { "Trade Goods" }
+                },
+                {
+                    "Other",
+                    new List<string> { }
+                },
             };
-            private static readonly Dictionary<string, string> CategoryToTab = new Dictionary<string, string>();
+            private static readonly Dictionary<string, string> CategoryToTab =
+                new Dictionary<string, string>();
 
             public TabController(GameObject holder)
             {
@@ -140,8 +171,10 @@ namespace QudUX.ScreenExtenders
             {
                 if (TabCategories["Other"].Contains(category))
                 {
-                    Log("(Error) Tried to move inventory category from 'Main' to 'Other',"
-                        + $" but TabCategories already contains the category '{category}'");
+                    Log(
+                        "(Error) Tried to move inventory category from 'Main' to 'Other',"
+                            + $" but TabCategories already contains the category '{category}'"
+                    );
                     return false;
                 }
                 TabCategories["Other"].Add(category);
@@ -154,11 +187,16 @@ namespace QudUX.ScreenExtenders
             {
                 if (!TabCategories["Other"].Contains(category))
                 {
-                    Log("(Error) Tried to move inventory category from 'Other' to 'Main',"
-                        + $" but TabCategories didn't contain the category '{category}'");
+                    Log(
+                        "(Error) Tried to move inventory category from 'Other' to 'Main',"
+                            + $" but TabCategories didn't contain the category '{category}'"
+                    );
                     return false;
                 }
                 TabCategories["Other"].Remove(category);
+                Holder
+                    .RequirePart<QudUX_InventoryScreenState>()
+                    .CategoriesInOtherTab.Remove(category);
                 UpdateCategoryMappings();
                 return true;
             }
@@ -192,7 +230,11 @@ namespace QudUX.ScreenExtenders
             }
         }
 
-        public static string GetItemValueString(GameObject item, GameObject fakeTraderForPriceEval, bool shouldHighlight = false)
+        public static string GetItemValueString(
+            GameObject item,
+            GameObject fakeTraderForPriceEval,
+            bool shouldHighlight = false
+        )
         {
             string valueString;
             int weight = (item.pPhysics != null) ? item.pPhysics.Weight : 0;
@@ -209,7 +251,8 @@ namespace QudUX.ScreenExtenders
             }
             else
             {
-                double itemValue = GetItemPricePer(item, fakeTraderForPriceEval) * (double)item.Count;
+                double itemValue =
+                    GetItemPricePer(item, fakeTraderForPriceEval) * (double)item.Count;
                 double perPoundValue = itemValue / (double)weight;
                 int finalValue = (int)Math.Round(perPoundValue, MidpointRounding.AwayFromZero);
                 if (shouldHighlight)
@@ -226,16 +269,23 @@ namespace QudUX.ScreenExtenders
 
         public static double GetItemPricePer(GameObject item, GameObject fakeTraderForPriceEval)
         {
-            return item.ValueEach * AdjustedCopyOf_TradeUI_GetMultiplier(item, fakeTraderForPriceEval);
+            return item.ValueEach
+                * AdjustedCopyOf_TradeUI_GetMultiplier(item, fakeTraderForPriceEval);
         }
 
-        public static float AdjustedCopyOf_TradeUI_GetMultiplier(GameObject item, GameObject fakeTraderForPriceEval)
+        public static float AdjustedCopyOf_TradeUI_GetMultiplier(
+            GameObject item,
+            GameObject fakeTraderForPriceEval
+        )
         {
             if (item != null && item.GetIntProperty("Currency") != 0)
             {
                 return 1f;
             }
-            double performance = GetTradePerformanceEvent.GetFor(IComponent<GameObject>.ThePlayer, fakeTraderForPriceEval);
+            double performance = GetTradePerformanceEvent.GetFor(
+                IComponent<GameObject>.ThePlayer,
+                fakeTraderForPriceEval
+            );
             return (float)performance;
         }
     }
